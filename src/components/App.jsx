@@ -63,16 +63,6 @@ export class App extends Component {
     });
   };
 
-  mapNewImages = fetchedImages => {
-    const mappedImages = fetchedImages.map(image => ({
-      id: image.id,
-      small: image.webformatURL,
-      large: image.largeImageURL,
-      alt: image.tags,
-    }));
-    return mappedImages;
-  };
-
   async componentDidUpdate(_prevProps, prevState) {
     const { query, actualPage, images } = this.state;
     if (prevState.query !== query || prevState.actualPage !== actualPage) {
@@ -86,9 +76,8 @@ export class App extends Component {
             isLoading: response.isLoading,
           })
         )
-        .catch(error => {
+        .catch(_error => {
           this.setState({ hasError: true });
-          console.log(error);
         });
     }
   }
@@ -101,12 +90,13 @@ export class App extends Component {
     if (this.state.hasError) {
       return (
         <h1>
-          Something went wrong, please try again later, or contact our service
+          Something went wrong, please try again later, or contact the service
           :(
         </h1>
       );
     }
 
+    // App run with no error
     return (
       <>
         <Searchbar onSubmit={this.setStateOnFormSubmit} />

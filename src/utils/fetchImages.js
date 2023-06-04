@@ -8,11 +8,19 @@ const fetchImages = async (images, query, actualPage) => {
       query,
       actualPage
     );
-    const mappedImages = await mapNewImages(fetchedData.images);
-    const concatImages = images.concat(mappedImages);
+    const newtListOfImagesFromPixabyNextPage = await mapNewImages(
+      fetchedData.images
+    );
+    const combinedArrayOfFetchedImages = [
+      ...images,
+      ...newtListOfImagesFromPixabyNextPage,
+    ];
     const lastPage = Math.ceil(fetchedData.totalHits / 12);
     const response = {
-      images: actualPage === 1 ? mappedImages : concatImages,
+      images:
+        actualPage === 1
+          ? newtListOfImagesFromPixabyNextPage
+          : combinedArrayOfFetchedImages,
       actualPage: actualPage,
       lastPage: lastPage,
       isLoading: false,
@@ -30,8 +38,7 @@ const fetchImages = async (images, query, actualPage) => {
 
     return response;
   } catch (error) {
-    notification.notifyAboutPixabyResponseError();
-    return { hasError: true, isLoading: false };
+    return notification.notifyAboutPixabyResponseError();
   }
 };
 
