@@ -4,8 +4,6 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
 import { Modal } from './Modal/Modal';
-// import pixaby from 'services/pixaby-api';
-// import notification from 'services/notiflix-api';
 import fetchImages from '../utils/fetchImages';
 
 export class App extends Component {
