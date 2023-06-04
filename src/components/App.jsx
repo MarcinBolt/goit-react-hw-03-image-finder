@@ -4,8 +4,9 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
 import { Modal } from './Modal/Modal';
-import pixaby from 'services/pixaby-api';
-import notification from 'services/notiflix-api';
+// import pixaby from 'services/pixaby-api';
+// import notification from 'services/notiflix-api';
+import fetchImages from '../utils/fetchImages';
 
 export class App extends Component {
   state = {
@@ -27,8 +28,8 @@ export class App extends Component {
     imgAlt: null,
   };
 
-  updateQuery = ({ query }) => {
-    this.setState({ query: query });
+  setStateOnFormSubmit = ({ query }) => {
+    this.setState({ query: query, actualPage: 1 });
   };
 
   openModal = e => {
@@ -59,9 +60,9 @@ export class App extends Component {
   };
 
   incrementActualPage = () => {
-    let { actualPage } = this.state;
-    actualPage++;
-    this.setState({ actualPage: actualPage });
+    this.setState(prevState => {
+      return { actualPage: prevState.actualPage + 1 };
+    });
   };
 
   mapNewImages = fetchedImages => {
@@ -75,53 +76,22 @@ export class App extends Component {
   };
 
   async componentDidUpdate(_prevProps, prevState) {
-    if (prevState.query !== this.state.query) {
-      const { query } = this.state;
+    const { query, actualPage, images } = this.state;
+    if (prevState.query !== query || prevState.actualPage !== actualPage) {
       this.setState({ isLoading: true });
-      try {
-        const fetchedData = await pixaby.getImagesBySearchingPhrases(query, 1);
-        const mappedImages = this.mapNewImages(fetchedData.images);
-        const lastPage = Math.ceil(fetchedData.totalHits / 12);
-        this.setState({
-          images: mappedImages,
-          actualPage: 1,
-          lastPage: lastPage,
+      fetchImages(images, query, actualPage)
+        .then(response =>
+          this.setState({
+            images: response.images,
+            actualPage: response.actualPage,
+            lastPage: response.lastPage,
+            isLoading: response.isLoading,
+          })
+        )
+        .catch(error => {
+          this.setState({ hasError: true });
+          console.log(error);
         });
-
-        fetchedData.totalHits > 0
-          ? notification.notifyAboutHowManyMatchesFound(fetchedData.totalHits)
-          : notification.notifyAboutNoMatching();
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } catch (error) {
-        this.setState({ hasError: true });
-        notification.notifyAboutPixabyResponseError();
-      } finally {
-        this.setState({ isLoading: false });
-      }
-    }
-
-    if (
-      prevState.actualPage !== this.state.actualPage &&
-      prevState.query === this.state.query &&
-      this.state.actualPage !== 1
-    ) {
-      const { query, actualPage, images } = this.state;
-      this.setState({ isLoading: true });
-      try {
-        const fetchedData = await pixaby.getImagesBySearchingPhrases(
-          query,
-          actualPage
-        );
-        const mappedImages = await this.mapNewImages(fetchedData.images);
-        const concatImages = images.concat(mappedImages);
-        this.setState({ images: concatImages });
-      } catch (error) {
-        this.setState({ hasError: true });
-        notification.notifyAboutPixabyResponseError();
-      } finally {
-        this.setState({ isLoading: false });
-      }
     }
   }
 
@@ -141,7 +111,7 @@ export class App extends Component {
 
     return (
       <>
-        <Searchbar onSubmit={this.updateQuery} />
+        <Searchbar onSubmit={this.setStateOnFormSubmit} />
         <ImageGallery
           images={images}
           page={actualPage}
