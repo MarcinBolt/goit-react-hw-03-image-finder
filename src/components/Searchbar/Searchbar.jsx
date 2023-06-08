@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import css from './Searchbar.module.css';
-import notification from 'services/notiflix-api';
+import notification from 'utils/notification';
 import PropTypes from 'prop-types';
 
 export class Searchbar extends Component {

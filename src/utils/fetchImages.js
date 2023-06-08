@@ -1,6 +1,6 @@
 import pixaby from 'services/pixaby-api';
-import notification from 'services/notiflix-api';
 import mapNewImages from './mapNewImages';
+import notification from 'utils/notification';
 
 const fetchImages = async (images, query, actualPage) => {
   try {

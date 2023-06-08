@@ -78,7 +78,8 @@ export class App extends Component {
         )
         .catch(_error => {
           this.setState({ hasError: true });
-        });
+        })
+        .finally(this.setState({ isLoading: false }));
     }
   }
 
