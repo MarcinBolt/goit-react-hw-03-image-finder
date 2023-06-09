@@ -65,7 +65,6 @@ export class App extends Component {
 
   async componentDidUpdate(_prevProps, prevState) {
     const { query, actualPage, images } = this.state;
-    console.log(images);
     if (prevState.query !== query || prevState.actualPage !== actualPage) {
       this.setState({ isLoading: true });
       fetchImages(images, query, actualPage)
@@ -81,8 +80,7 @@ export class App extends Component {
           this.setState({ hasError: true });
         })
         .finally(this.setState({ isLoading: false }));
-      }
-      console.log(images);
+    }
   }
 
   render() {
