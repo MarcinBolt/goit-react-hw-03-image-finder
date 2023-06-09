@@ -1,6 +1,7 @@
 import pixaby from 'services/pixaby-api';
 import mapNewImages from './mapNewImages';
 import notification from 'utils/notification';
+import PropTypes from 'prop-types';
 
 const fetchImages = async (images, query, actualPage) => {
   try {
@@ -43,3 +44,9 @@ const fetchImages = async (images, query, actualPage) => {
 };
 
 export default fetchImages;
+
+fetchImages.propTypes = {
+  images: PropTypes.array.isRequired,
+  query: PropTypes.string.isRequired,
+  actualPage: PropTypes.number.isRequired,
+};
