@@ -63,23 +63,36 @@ export class App extends Component {
     });
   };
 
+  handleSetImages = response => {
+    this.setState({
+      images: response.images,
+      actualPage: response.actualPage,
+      lastPage: response.lastPage,
+      isLoading: response.isLoading,
+    });
+  };
+
+  handleSetError = () => {
+    this.setState({ hasError: true });
+  };
+
+  handleSetIsLoading = () => {
+    this.setState({ isLoading: false });
+  };
+
   async componentDidUpdate(_prevProps, prevState) {
     const { query, actualPage, images } = this.state;
+
     if (prevState.query !== query || prevState.actualPage !== actualPage) {
       this.setState({ isLoading: true });
-      fetchImages(images, query, actualPage)
-        .then(response =>
-          this.setState({
-            images: response.images,
-            actualPage: response.actualPage,
-            lastPage: response.lastPage,
-            isLoading: response.isLoading,
-          })
-        )
-        .catch(_error => {
-          this.setState({ hasError: true });
-        })
-        .finally(this.setState({ isLoading: false }));
+      fetchImages(
+        images,
+        query,
+        actualPage,
+        this.handleSetImages,
+        this.handleSetError,
+        this.handleSetIsLoading
+      );
     }
   }
 

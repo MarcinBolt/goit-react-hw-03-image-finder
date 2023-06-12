@@ -3,7 +3,14 @@ import mapNewImages from './mapNewImages';
 import notification from 'utils/notification';
 import PropTypes from 'prop-types';
 
-const fetchImages = async (images, query, actualPage) => {
+const fetchImages = async (
+  images,
+  query,
+  actualPage,
+  handleSetImages,
+  handleSetError,
+  handleSetIsLoading
+) => {
   try {
     const fetchedData = await pixaby.getImagesBySearchingPhrases(
       query,
@@ -26,6 +33,9 @@ const fetchImages = async (images, query, actualPage) => {
       lastPage: lastPage,
       isLoading: false,
     };
+
+    handleSetImages(response);
+
     if (actualPage === 1 && fetchedData.totalHits > 0) {
       notification.notifyAboutHowManyMatchesFound(fetchedData.totalHits);
     }
@@ -39,7 +49,10 @@ const fetchImages = async (images, query, actualPage) => {
 
     return response;
   } catch (error) {
-    return notification.notifyAboutPixabyResponseError();
+    notification.notifyAboutPixabyResponseError();
+    return handleSetError();
+  } finally {
+    handleSetIsLoading();
   }
 };
 
